@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Produk</title>
+</head>
+<body>
+
+    <h2>Daftar Produk</h2>
+
+    <div id="hasil"></div>
+
+    <script>
+
+        // Array yang berisi data produk
+        let produk = [
+            {id: 1, nama: "Mouse", harga: 200000, stok: 10},
+            {id: 2, nama: "Keyboard", harga: 350000, stok: 7},
+            {id: 3, nama: "Monitor", harga: 1500000, stok: 5}
+        ];
+
+
+        // Fungsi untuk menambahkan produk baru ke dalam array
+        function tambahProduk(nama, harga, stok) {
+
+            // Membuat ID baru berdasarkan jumlah produk
+            let idBaru = produk.length + 1;
+            // Menambahkan produk baru ke dalam array
+            produk.push({
+                id: idBaru,
+                nama: nama,
+                harga: harga,
+                stok: stok
+            });
+        }
+
+
+        // Fungsi untuk menghapus produk berdasarkan ID
+        function hapusProduk(id) {
+
+            produk = produk.filter(function(item) {
+                return item.id !== id;
+            });
+        }
+
+
+        // Fungsi untuk menampilkan daftar produk
+        function tampilkanProduk() {
+            let hasil = "<table border='1' cellpadding='10'>";
+            hasil += "<tr>";
+            hasil += "<th>ID</th>";
+            hasil += "<th>Nama Produk</th>";
+            hasil += "<th>Harga</th>";
+            hasil += "<th>Stok</th>";
+            hasil += "</tr>";
+
+            produk.forEach(function(item) {
+                hasil += "<tr>";
+                hasil += "<td>" + item.id + "</td>";
+                hasil += "<td>" + item.nama + "</td>";
+                hasil += "<td>Rp " + item.harga.toLocaleString("id-ID") + "</td>";
+                hasil += "<td>" + item.stok + "</td>";
+                hasil += "</tr>";
+            });
+
+            hasil += "</table>";
+            document.getElementById("hasil").innerHTML = hasil;
+        }
+
+
+        // Menambahkan produk baru
+        tambahProduk("Headset", 250000, 8);
+        // Menampilkan daftar produk
+        tampilkanProduk();
+
+    </script>
+
+</body>
+</html>
