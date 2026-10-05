@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Transportasi</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        input {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        button {
+            padding: 8px 15px;
+            cursor: pointer;
+        }
+
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #feecf5;
+        }
+
+        .btn-hapus {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+        }
+
+        .btn-tambah {
+            background-color: #198754;
+            color: white;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Sistem Manajemen Transportasi</h2>
+
+    <h3>Tambah Pelanggan</h3>
+
+    <input type="text" id="nama" placeholder="Nama Pelanggan">
+    <input type="text" id="nomorTelepon" placeholder="Nomor Telepon">
+    <input type="text" id="kendaraan" placeholder="Kendaraan Disewa">
+
+    <button class="btn-tambah" onclick="tambahPelanggan()">
+        Tambah Pelanggan
+    </button>
+
+
+    <h3>Daftar Pelanggan yang Sedang Menyewa</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nama Pelanggan</th>
+                <th>Nomor Telepon</th>
+                <th>Kendaraan Disewa</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+
+        <tbody id="daftarPelanggan"></tbody>
+    </table>
+
+
+    <script>
+
+        // Class Pelanggan sebagai cetakan untuk membuat objek pelanggan
+        class Pelanggan {
+
+            // Constructor digunakan untuk menentukan data awal pelanggan
+            constructor(nama, nomorTelepon) {
+                this.nama = nama;
+                this.nomorTelepon = nomorTelepon;
+                this.kendaraanDisewa = [];
+            }
+
+            // Method untuk mencatat kendaraan yang disewa pelanggan
+            sewaKendaraan(kendaraan) {
+                this.kendaraanDisewa.push(kendaraan);
+            }
+        }
+
+        // Array untuk menyimpan seluruh data pelanggan
+        let daftarPelanggan = [];
+
+        // Fungsi untuk menambahkan pelanggan
+        function tambahPelanggan() {
+            let nama = document.getElementById("nama").value;
+            let nomorTelepon = document.getElementById("nomorTelepon").value;
+            let kendaraan = document.getElementById("kendaraan").value;
+
+            // Memastikan semua data sudah diisi
+            if (nama == "" || nomorTelepon == "" || kendaraan == "") {
+                alert("Semua data harus diisi!");
+                return;
+            }
+
+            // Membuat objek pelanggan baru menggunakan class Pelanggan
+            let pelangganBaru = new Pelanggan(nama, nomorTelepon);
+
+            // Mencatat kendaraan yang disewa
+            pelangganBaru.sewaKendaraan(kendaraan);
+
+            // Menambahkan objek pelanggan ke dalam array
+            daftarPelanggan.push(pelangganBaru);
+
+            // Mengosongkan input
+            document.getElementById("nama").value = "";
+            document.getElementById("nomorTelepon").value = "";
+            document.getElementById("kendaraan").value = "";
+
+            // Menampilkan data terbaru
+            tampilkanPelanggan();
+        }
+
+
+        // Fungsi untuk menghapus pelanggan berdasarkan nomor index
+        function hapusPelanggan(index) {
+            daftarPelanggan.splice(index, 1);
+
+            // Menampilkan kembali data setelah dihapus
+            tampilkanPelanggan();
+        }
+
+
+        // Fungsi untuk menampilkan daftar pelanggan
+        function tampilkanPelanggan() {
+
+            let tabel = "";
+
+            daftarPelanggan.forEach(function(pelanggan, index) {
+
+                tabel += "<tr>";
+                tabel += "<td>" + (index + 1) + "</td>";
+                tabel += "<td>" + pelanggan.nama + "</td>";
+                tabel += "<td>" + pelanggan.nomorTelepon + "</td>";
+                tabel += "<td>" +
+                    pelanggan.kendaraanDisewa.join(", ") +
+                    "</td>";
+
+                tabel += "<td>";
+                tabel +=
+                    "<button class='btn-hapus' onclick='hapusPelanggan(" +
+                    index +
+                    ")'>Hapus</button>";
+
+                tabel += "</td>";
+                tabel += "</tr>";
+            });
+
+            document.getElementById("daftarPelanggan").innerHTML = tabel;
+        }
+
+    </script>
+
+</body>
+</html>
