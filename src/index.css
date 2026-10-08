@@ -37,31 +37,118 @@ a {
 
 /*NAVBAR*/
 
-.navbar {
-  background-color: rgba(255, 250, 247, 0.97) !important;
+.navbar-bakery {
+  background-color: rgba(255, 250, 247, 0.96) !important;
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid #f3dada;
+  padding: 14px 0;
+  transition: all 0.3s ease;
 }
 
-.navbar-brand {
+/* Logo */
+.bakery-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   color: var(--brown-dark) !important;
-  font-size: 1.35rem;
-  letter-spacing: 0.3px;
-}
-
-.nav-link {
-  color: var(--brown) !important;
-  font-weight: 500;
-  margin-left: 12px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.2px;
   transition: 0.3s ease;
 }
 
-.nav-link:hover {
+.bakery-brand:hover {
   color: var(--pink-dark) !important;
+  transform: translateY(-1px);
 }
 
-.nav-link.active {
+.brand-icon {
+  font-size: 1.5rem;
+}
+
+/* Menu */
+.bakery-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  color: var(--brown) !important;
+  font-weight: 500;
+  padding: 9px 17px !important;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+/* Icon */
+.bakery-link i {
+  font-size: 0.9rem;
+  transition: 0.3s ease;
+}
+
+/* Hover */
+.bakery-link:hover {
+  background-color: var(--pink-light);
+  color: var(--pink-dark) !important;
+  transform: translateY(-2px);
+}
+
+.bakery-link:hover i {
+  transform: scale(1.1);
+}
+
+/* Active Page */
+.bakery-link.active {
+  background-color: var(--pink-soft);
   color: var(--pink-dark) !important;
   font-weight: 700;
+  box-shadow: 0 4px 12px rgba(201, 120, 120, 0.12);
+}
+
+/* Contact lebih menonjol */
+.bakery-link.contact-link {
+  background-color: var(--brown-dark);
+  color: white !important;
+  margin-left: 5px;
+}
+
+.bakery-link.contact-link:hover {
+  background-color: var(--pink-dark);
+  color: white !important;
+}
+
+.bakery-link.contact-link.active {
+  background-color: var(--pink-dark);
+  color: white !important;
+}
+
+/* Mobile button */
+.bakery-toggler {
+  border: 1px solid #e8caca !important;
+  border-radius: 10px;
+  padding: 7px 10px;
+}
+
+.bakery-toggler:focus {
+  box-shadow: 0 0 0 0.2rem rgba(233, 166, 166, 0.2);
+}
+
+/* Mobile */
+@media (max-width: 991px) {
+
+  .navbar-bakery {
+    padding: 12px 0;
+  }
+
+  .bakery-link {
+    margin-top: 5px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .bakery-link.contact-link {
+    margin-left: 0;
+    margin-top: 8px;
+  }
+
 }
 
 
