@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tugas 2 JavaScript - Data Pegawai</title>
+</head>
+<body>
+
+    <h2>Data Pegawai</h2>
+
+    <table border="1" cellpadding="10" cellspacing="0">
+        
+        <!-- judul kolom menggunakan thead -->
+        <thead>
+            <tr>
+                <th>Nama Pegawai</th>
+                <th>Umur</th>
+                <th>Jabatan</th>
+                <th>Status</th>
+                <th>Gaji Pokok</th>
+                <th>Tunjangan Jabatan</th>
+                <th>BPJS</th>
+                <th>Tunjangan Keluarga</th>
+            </tr>
+        </thead>
+
+        <!-- isi data menggunakan tbody -->
+        <tbody>
+            <tr>
+                <td id="nama"></td>
+                <td id="umur"></td>
+                <td id="jabatan"></td>
+                <td id="status"></td>
+                <td id="gapok"></td>
+                <td id="tunjanganJabatan"></td>
+                <td id="bpjs"></td>
+                <td id="tunjanganKeluarga"></td>
+            </tr>
+        </tbody>
+
+        <!-- Total gaji menggunakan tfoot -->
+        <tfoot>
+            <tr>
+                <th colspan="7">Total Gaji</th>
+                <th id="totalGaji"></th>
+            </tr>
+        </tfoot>
+
+    </table>
+
+
+    <script>
+
+        // Data pegawai
+        let nama = "Dodi Prayodi";
+        let umur = 25;
+        let jabatan = "Manajer";
+        let status = "Menikah";
+
+
+        // Menentukan gaji pokok berdasarkan jabatan menggunakan IF
+        let gajiPokok;
+        if (jabatan == "Manajer") {
+            gajiPokok = 15000000;
+        } else if (jabatan == "Asisten Manajer") {
+            gajiPokok = 10000000;
+        } else if (jabatan == "Staff") {
+            gajiPokok = 5000000;
+        }
+
+
+        // Menghitung tunjangan jabatan sebesar 15% dari gaji pokok
+        let tunjanganJabatan = 15 / 100 * gajiPokok;
+        // Menghitung BPJS sebesar 10% dari gaji pokok
+        let bpjs = 10 / 100 * gajiPokok;
+        // Menghitung tunjangan keluarga menggunakan ternary
+        // Jika status menikah, mendapat 20% dari gaji pokok
+        let tunjanganKeluarga = status == "Menikah"
+            ? 20 / 100 * gajiPokok
+            : 0;
+
+
+        // Menghitung total gaji
+        let totalGaji = gajiPokok
+                      + tunjanganJabatan
+                      + bpjs
+                      + tunjanganKeluarga;
+
+
+        // Menampilkan data pegawai ke dalam tabel
+        document.getElementById("nama").innerHTML = nama;
+        document.getElementById("umur").innerHTML = umur + " tahun";
+        document.getElementById("jabatan").innerHTML = jabatan;
+        document.getElementById("status").innerHTML = status;
+
+        document.getElementById("gapok").innerHTML =
+            "Rp " + gajiPokok.toLocaleString("id-ID");
+
+        document.getElementById("tunjanganJabatan").innerHTML =
+            "Rp " + tunjanganJabatan.toLocaleString("id-ID");
+
+        document.getElementById("bpjs").innerHTML =
+            "Rp " + bpjs.toLocaleString("id-ID");
+
+        document.getElementById("tunjanganKeluarga").innerHTML =
+            "Rp " + tunjanganKeluarga.toLocaleString("id-ID");
+
+        document.getElementById("totalGaji").innerHTML =
+            "Rp " + totalGaji.toLocaleString("id-ID");
+
+    </script>
+
+</body>
+</html>
