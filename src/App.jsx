@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import booksData from "./Utils/books.js";
 import "./App.css";
@@ -9,6 +8,23 @@ function App() {
   const [pencarian, setPencarian] = useState("");
   const [formTerbuka, setFormTerbuka] = useState(false);
   const [bukuDipilih, setBukuDipilih] = useState(null);
+
+  // --- STATE UNTUK GENRE DAN AUTHOR (TUGAS ADMIN) ---
+  const [genres, setGenres] = useState([
+    { id: 1, name: "Fiksi" },
+    { id: 2, name: "Non-Fiksi" },
+    { id: 3, name: "Sains" },
+    { id: 4, name: "Novel" }
+  ]);
+
+  const [authors, setAuthors] = useState([
+    { id: 1, name: "Pramoedya Ananta Toer" },
+    { id: 2, name: "Andrea Hirata" },
+    { id: 3, name: "Tere Liye" }
+  ]);
+
+  const [inputGenre, setInputGenre] = useState("");
+  const [inputAuthor, setInputAuthor] = useState("");
 
   const [formBuku, setFormBuku] = useState({
     title: "",
@@ -23,6 +39,22 @@ function App() {
       .toLowerCase()
       .includes(pencarian.toLowerCase().trim())
   );
+
+  // --- HANDLER UNTUK TAMBAH GENRE ---
+  function tambahGenre(e) {
+    e.preventDefault();
+    if (!inputGenre.trim()) return;
+    setGenres((prev) => [...prev, { id: Date.now(), name: inputGenre.trim() }]);
+    setInputGenre("");
+  }
+
+  // --- HANDLER UNTUK TAMBAH AUTHOR ---
+  function tambahAuthor(e) {
+    e.preventDefault();
+    if (!inputAuthor.trim()) return;
+    setAuthors((prev) => [...prev, { id: Date.now(), name: inputAuthor.trim() }]);
+    setInputAuthor("");
+  }
 
   function ubahForm(e) {
     const { name, value } = e.target;
@@ -155,6 +187,17 @@ function App() {
           }}
         >
           Koleksi Buku
+        </button>
+
+        <button
+          type="button"
+          className={halaman === "admin" && !bukuDipilih ? "active" : ""}
+          onClick={() => {
+            setHalaman("admin");
+            setBukuDipilih(null);
+          }}
+        >
+          Admin
         </button>
       </nav>
 
@@ -418,6 +461,77 @@ function App() {
                 Buku tidak ditemukan. Coba kata kunci lain, ya! 🌷
               </p>
             )}
+          </section>
+        )}
+
+        {/* HALAMAN ADMIN (FITUR GENRE & AUTHOR) */}
+        {!bukuDipilih && halaman === "admin" && (
+          <section className="collection-section">
+            <div className="section-heading">
+              <div>
+                <span className="section-label">PANEL ADMIN</span>
+                <h2>Kelola Genre & Author</h2>
+                <p>Tambah dan lihat data genre serta author buku.</p>
+              </div>
+            </div>
+
+            {/* SECTION GENRE */}
+            <div className="book-form" style={{ marginBottom: "30px" }}>
+              <h3>Genre Buku</h3>
+
+              {/* Form Create Genre */}
+              <form onSubmit={tambahGenre} style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+                <input
+                  type="text"
+                  placeholder="Masukkan nama genre baru..."
+                  value={inputGenre}
+                  onChange={(e) => setInputGenre(e.target.value)}
+                  style={{ flex: 1 }}
+                />
+                <button type="submit" className="primary-button">
+                  + Tambah Genre
+                </button>
+              </form>
+
+              {/* Read / Menampilkan List Genre */}
+              <h4>Daftar Genre ({genres.length})</h4>
+              <ul style={{ paddingLeft: "20px", marginTop: "10px" }}>
+                {genres.map((genre) => (
+                  <li key={genre.id} style={{ marginBottom: "8px", fontSize: "1.05rem" }}>
+                    {genre.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* SECTION AUTHOR */}
+            <div className="book-form">
+              <h3>Author / Penulis Buku</h3>
+
+              {/* Form Create Author */}
+              <form onSubmit={tambahAuthor} style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+                <input
+                  type="text"
+                  placeholder="Masukkan nama author baru..."
+                  value={inputAuthor}
+                  onChange={(e) => setInputAuthor(e.target.value)}
+                  style={{ flex: 1 }}
+                />
+                <button type="submit" className="primary-button">
+                  + Tambah Author
+                </button>
+              </form>
+
+              {/* Read / Menampilkan List Author */}
+              <h4>Daftar Author ({authors.length})</h4>
+              <ul style={{ paddingLeft: "20px", marginTop: "10px" }}>
+                {authors.map((author) => (
+                  <li key={author.id} style={{ marginBottom: "8px", fontSize: "1.05rem" }}>
+                    {author.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </section>
         )}
       </main>
