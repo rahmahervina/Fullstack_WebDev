@@ -9,7 +9,7 @@ function App() {
   const [formTerbuka, setFormTerbuka] = useState(false);
   const [bukuDipilih, setBukuDipilih] = useState(null);
 
-  // --- STATE UNTUK GENRE DAN AUTHOR (TUGAS ADMIN) ---
+  // --- STATE UNTUK GENRE DAN AUTHOR ---
   const [genres, setGenres] = useState([
     { id: 1, name: "Fiksi" },
     { id: 2, name: "Non-Fiksi" },
@@ -26,6 +26,13 @@ function App() {
   const [inputGenre, setInputGenre] = useState("");
   const [inputAuthor, setInputAuthor] = useState("");
 
+  // State untuk mode Edit (Update)
+  const [editGenreId, setEditGenreId] = useState(null);
+  const [editGenreName, setEditGenreName] = useState("");
+
+  const [editAuthorId, setEditAuthorId] = useState(null);
+  const [editAuthorName, setEditAuthorName] = useState("");
+
   const [formBuku, setFormBuku] = useState({
     title: "",
     author: "",
@@ -40,7 +47,8 @@ function App() {
       .includes(pencarian.toLowerCase().trim())
   );
 
-  // --- HANDLER UNTUK TAMBAH GENRE ---
+  // ==================== FITUR GENRE (CRUD) ====================
+  // 1. Create Genre
   function tambahGenre(e) {
     e.preventDefault();
     if (!inputGenre.trim()) return;
@@ -48,7 +56,32 @@ function App() {
     setInputGenre("");
   }
 
-  // --- HANDLER UNTUK TAMBAH AUTHOR ---
+  // 2. Start Edit Genre
+  function mulaiEditGenre(genre) {
+    setEditGenreId(genre.id);
+    setEditGenreName(genre.name);
+  }
+
+  // 3. Save Edit / Update Genre
+  function simpanEditGenre(e) {
+    e.preventDefault();
+    if (!editGenreName.trim()) return;
+    setGenres((prev) =>
+      prev.map((g) => (g.id === editGenreId ? { ...g, name: editGenreName.trim() } : g))
+    );
+    setEditGenreId(null);
+    setEditGenreName("");
+  }
+
+  // 4. Delete Genre
+  function hapusGenre(id) {
+    if (window.confirm("Yakin ingin menghapus genre ini?")) {
+      setGenres((prev) => prev.filter((g) => g.id !== id));
+    }
+  }
+
+  // ==================== FITUR AUTHOR (CRUD) ====================
+  // 1. Create Author
   function tambahAuthor(e) {
     e.preventDefault();
     if (!inputAuthor.trim()) return;
@@ -56,18 +89,38 @@ function App() {
     setInputAuthor("");
   }
 
+  // 2. Start Edit Author
+  function mulaiEditAuthor(author) {
+    setEditAuthorId(author.id);
+    setEditAuthorName(author.name);
+  }
+
+  // 3. Save Edit / Update Author
+  function simpanEditAuthor(e) {
+    e.preventDefault();
+    if (!editAuthorName.trim()) return;
+    setAuthors((prev) =>
+      prev.map((a) => (a.id === editAuthorId ? { ...a, name: editAuthorName.trim() } : a))
+    );
+    setEditAuthorId(null);
+    setEditAuthorName("");
+  }
+
+  // 4. Delete Author
+  function hapusAuthor(id) {
+    if (window.confirm("Yakin ingin menghapus author ini?")) {
+      setAuthors((prev) => prev.filter((a) => a.id !== id));
+    }
+  }
+
+  // ==================== HANDLER BUKU ====================
   function ubahForm(e) {
     const { name, value } = e.target;
-
-    setFormBuku((data) => ({
-      ...data,
-      [name]: value,
-    }));
+    setFormBuku((data) => ({ ...data, [name]: value }));
   }
 
   function tambahBuku(e) {
     e.preventDefault();
-
     const bukuBaru = {
       id: Date.now(),
       title: formBuku.title.trim(),
@@ -78,30 +131,16 @@ function App() {
         formBuku.image.trim() ||
         "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&auto=format&fit=crop&q=80",
     };
-
     setBooks((data) => [...data, bukuBaru]);
-
-    setFormBuku({
-      title: "",
-      author: "",
-      year: "2026",
-      description: "",
-      image: "",
-    });
-
+    setFormBuku({ title: "", author: "", year: "2026", description: "", image: "" });
     setFormTerbuka(false);
     setPencarian("");
   }
 
   function hapusBuku(id) {
-    const yakin = window.confirm("Yakin ingin menghapus buku ini?");
-
-    if (yakin) {
+    if (window.confirm("Yakin ingin menghapus buku ini?")) {
       setBooks((data) => data.filter((book) => book.id !== id));
-
-      if (bukuDipilih?.id === id) {
-        setBukuDipilih(null);
-      }
+      if (bukuDipilih?.id === id) setBukuDipilih(null);
     }
   }
 
@@ -123,15 +162,11 @@ function App() {
 
         <div className="book-info">
           <p className="book-label">KOLEKSI BUKU</p>
-
           <h3>{book.title}</h3>
-
           <p className="book-author">
             <span>Oleh</span> {book.author}
           </p>
-
           <p className="book-description">{book.description}</p>
-
           <div className="book-actions">
             <button
               type="button"
@@ -140,7 +175,6 @@ function App() {
             >
               Lihat Detail
             </button>
-
             <button
               type="button"
               className="delete-button"
@@ -161,7 +195,6 @@ function App() {
           <span className="brand-icon">🌷</span>
           <h1>BookSales</h1>
         </div>
-
         <p>Temukan cerita, temukan inspirasi.</p>
       </header>
 
@@ -215,24 +248,12 @@ function App() {
                     "https://placehold.co/600x400/f9e5ec/536e59?text=BookSales";
                 }}
               />
-
               <div className="detail-content">
                 <span className="section-label">DETAIL BUKU</span>
-
                 <h2>{bukuDipilih.title}</h2>
-
-                <p>
-                  <strong>Penulis:</strong> {bukuDipilih.author}
-                </p>
-
-                <p>
-                  <strong>Tahun terbit:</strong> {bukuDipilih.year}
-                </p>
-
-                <p className="detail-description">
-                  {bukuDipilih.description}
-                </p>
-
+                <p><strong>Penulis:</strong> {bukuDipilih.author}</p>
+                <p><strong>Tahun terbit:</strong> {bukuDipilih.year}</p>
+                <p className="detail-description">{bukuDipilih.description}</p>
                 <button
                   type="button"
                   className="primary-button"
@@ -250,21 +271,9 @@ function App() {
           <>
             <section className="hero">
               <div className="hero-content">
-                <span className="hero-tag">
-                  ✦ SELAMAT DATANG DI BOOKSALES
-                </span>
-
-                <h2>
-                  Satu buku,
-                  <br />
-                  <span>seribu cerita.</span>
-                </h2>
-
-                <p>
-                  Temukan buku favoritmu dan mulai perjalanan baru
-                  melalui setiap halaman yang kamu baca.
-                </p>
-
+                <span className="hero-tag">✦ SELAMAT DATANG DI BOOKSALES</span>
+                <h2>Satu buku,<br /><span>seribu cerita.</span></h2>
+                <p>Temukan buku favoritmu dan mulai perjalanan baru melalui setiap halaman yang kamu baca.</p>
                 <button
                   type="button"
                   className="primary-button"
@@ -272,28 +281,23 @@ function App() {
                 >
                   Jelajahi Koleksi <span>→</span>
                 </button>
-
                 <div className="hero-stats">
                   <div>
                     <strong>{books.length}</strong>
                     <span>Buku tersedia</span>
                   </div>
-
                   <div className="stats-divider"></div>
-
                   <div>
                     <strong>♡</strong>
                     <span>Untuk pecinta buku</span>
                   </div>
                 </div>
               </div>
-
               <div className="hero-image">
                 <img
                   src="https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&auto=format&fit=crop&q=80"
                   alt="Koleksi buku pilihan"
                 />
-
                 <div className="floating-note">
                   <span>🌿</span>
                   <div>
@@ -309,11 +313,8 @@ function App() {
                 <div>
                   <span className="section-label">PILIHAN UNTUKMU</span>
                   <h2>Koleksi Buku</h2>
-                  <p>
-                    Temukan bacaan yang cocok untuk menemani harimu.
-                  </p>
+                  <p>Temukan bacaan yang cocok untuk menemani harimu.</p>
                 </div>
-
                 <button
                   type="button"
                   className="text-button"
@@ -322,7 +323,6 @@ function App() {
                   Lihat semua buku →
                 </button>
               </div>
-
               <div className="book-container">
                 {books.slice(0, 6).map(tampilkanBuku)}
               </div>
@@ -330,12 +330,10 @@ function App() {
 
             <section className="quote-banner">
               <span>“</span>
-
               <div>
                 <h2>Berikan ruang untuk cerita baru.</h2>
                 <p>Satu halaman kecil bisa membuka dunia yang besar.</p>
               </div>
-
               <span className="quote-flower">🌷</span>
             </section>
           </>
@@ -348,11 +346,8 @@ function App() {
               <div>
                 <span className="section-label">TEMUKAN BACAANMU</span>
                 <h2>Semua Koleksi Buku</h2>
-                <p>
-                  Ada {books.length} buku yang siap menemani perjalananmu.
-                </p>
+                <p>Ada {books.length} buku yang siap menemani perjalananmu.</p>
               </div>
-
               <button
                 type="button"
                 className="primary-button"
@@ -362,11 +357,9 @@ function App() {
               </button>
             </div>
 
-            {/* FORM TAMBAH BUKU */}
             {formTerbuka && (
               <form className="book-form" onSubmit={tambahBuku}>
                 <h3>Tambah Buku Baru 🌷</h3>
-
                 <label htmlFor="title">Judul buku *</label>
                 <input
                   id="title"
@@ -376,7 +369,6 @@ function App() {
                   placeholder="Masukkan judul buku"
                   required
                 />
-
                 <label htmlFor="author">Nama penulis *</label>
                 <input
                   id="author"
@@ -386,7 +378,6 @@ function App() {
                   placeholder="Masukkan nama penulis"
                   required
                 />
-
                 <label htmlFor="year">Tahun terbit *</label>
                 <input
                   id="year"
@@ -398,7 +389,6 @@ function App() {
                   onChange={ubahForm}
                   required
                 />
-
                 <label htmlFor="description">Deskripsi buku *</label>
                 <textarea
                   id="description"
@@ -409,7 +399,6 @@ function App() {
                   rows="3"
                   required
                 />
-
                 <label htmlFor="image">URL gambar buku (opsional)</label>
                 <input
                   id="image"
@@ -419,24 +408,20 @@ function App() {
                   onChange={ubahForm}
                   placeholder="https://..."
                 />
-
                 <button className="primary-button" type="submit">
                   Simpan Buku
                 </button>
               </form>
             )}
 
-            {/* PENCARIAN BUKU */}
             <div className="search-box">
               <span>🔎</span>
-
               <input
                 type="text"
                 placeholder="Cari judul buku atau nama penulis..."
                 value={pencarian}
                 onChange={(e) => setPencarian(e.target.value)}
               />
-
               {pencarian && (
                 <button
                   type="button"
@@ -464,14 +449,14 @@ function App() {
           </section>
         )}
 
-        {/* HALAMAN ADMIN (FITUR GENRE & AUTHOR) */}
+        {/* HALAMAN ADMIN (CRUD COMPLETE FOR GENRE & AUTHOR) */}
         {!bukuDipilih && halaman === "admin" && (
           <section className="collection-section">
             <div className="section-heading">
               <div>
                 <span className="section-label">PANEL ADMIN</span>
                 <h2>Kelola Genre & Author</h2>
-                <p>Tambah dan lihat data genre serta author buku.</p>
+                <p>Tambah, edit, dan hapus data genre serta author buku.</p>
               </div>
             </div>
 
@@ -479,7 +464,7 @@ function App() {
             <div className="book-form" style={{ marginBottom: "30px" }}>
               <h3>Genre Buku</h3>
 
-              {/* Form Create Genre */}
+              {/* Form Tambah Genre */}
               <form onSubmit={tambahGenre} style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
                 <input
                   type="text"
@@ -493,12 +478,67 @@ function App() {
                 </button>
               </form>
 
-              {/* Read / Menampilkan List Genre */}
+              {/* Read / List Genre dengan Edit & Delete */}
               <h4>Daftar Genre ({genres.length})</h4>
-              <ul style={{ paddingLeft: "20px", marginTop: "10px" }}>
+              <ul style={{ paddingLeft: "0", listStyle: "none", marginTop: "15px" }}>
                 {genres.map((genre) => (
-                  <li key={genre.id} style={{ marginBottom: "8px", fontSize: "1.05rem" }}>
-                    {genre.name}
+                  <li
+                    key={genre.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "10px 14px",
+                      marginBottom: "8px",
+                      backgroundColor: "#fff",
+                      borderRadius: "6px",
+                      border: "1px solid #eee"
+                    }}
+                  >
+                    {editGenreId === genre.id ? (
+                      <form onSubmit={simpanEditGenre} style={{ display: "flex", gap: "10px", width: "100%" }}>
+                        <input
+                          type="text"
+                          value={editGenreName}
+                          onChange={(e) => setEditGenreName(e.target.value)}
+                          style={{ flex: 1, padding: "6px 10px" }}
+                          autoFocus
+                        />
+                        <button type="submit" className="primary-button" style={{ padding: "6px 12px" }}>
+                          Simpan
+                        </button>
+                        <button
+                          type="button"
+                          className="delete-button"
+                          style={{ padding: "6px 12px" }}
+                          onClick={() => setEditGenreId(null)}
+                        >
+                          Batal
+                        </button>
+                      </form>
+                    ) : (
+                      <>
+                        <span style={{ fontSize: "1rem", fontWeight: "500" }}>{genre.name}</span>
+                        <div style={{ display: "flex", gap: "8px" }}>
+                          <button
+                            type="button"
+                            className="detail-button"
+                            style={{ padding: "6px 12px", fontSize: "0.85rem" }}
+                            onClick={() => mulaiEditGenre(genre)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            className="delete-button"
+                            style={{ padding: "6px 12px", fontSize: "0.85rem" }}
+                            onClick={() => hapusGenre(genre.id)}
+                          >
+                            Hapus
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -508,7 +548,7 @@ function App() {
             <div className="book-form">
               <h3>Author / Penulis Buku</h3>
 
-              {/* Form Create Author */}
+              {/* Form Tambah Author */}
               <form onSubmit={tambahAuthor} style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
                 <input
                   type="text"
@@ -522,12 +562,67 @@ function App() {
                 </button>
               </form>
 
-              {/* Read / Menampilkan List Author */}
+              {/* Read / List Author dengan Edit & Delete */}
               <h4>Daftar Author ({authors.length})</h4>
-              <ul style={{ paddingLeft: "20px", marginTop: "10px" }}>
+              <ul style={{ paddingLeft: "0", listStyle: "none", marginTop: "15px" }}>
                 {authors.map((author) => (
-                  <li key={author.id} style={{ marginBottom: "8px", fontSize: "1.05rem" }}>
-                    {author.name}
+                  <li
+                    key={author.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "10px 14px",
+                      marginBottom: "8px",
+                      backgroundColor: "#fff",
+                      borderRadius: "6px",
+                      border: "1px solid #eee"
+                    }}
+                  >
+                    {editAuthorId === author.id ? (
+                      <form onSubmit={simpanEditAuthor} style={{ display: "flex", gap: "10px", width: "100%" }}>
+                        <input
+                          type="text"
+                          value={editAuthorName}
+                          onChange={(e) => setEditAuthorName(e.target.value)}
+                          style={{ flex: 1, padding: "6px 10px" }}
+                          autoFocus
+                        />
+                        <button type="submit" className="primary-button" style={{ padding: "6px 12px" }}>
+                          Simpan
+                        </button>
+                        <button
+                          type="button"
+                          className="delete-button"
+                          style={{ padding: "6px 12px" }}
+                          onClick={() => setEditAuthorId(null)}
+                        >
+                          Batal
+                        </button>
+                      </form>
+                    ) : (
+                      <>
+                        <span style={{ fontSize: "1rem", fontWeight: "500" }}>{author.name}</span>
+                        <div style={{ display: "flex", gap: "8px" }}>
+                          <button
+                            type="button"
+                            className="detail-button"
+                            style={{ padding: "6px 12px", fontSize: "0.85rem" }}
+                            onClick={() => mulaiEditAuthor(author)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            className="delete-button"
+                            style={{ padding: "6px 12px", fontSize: "0.85rem" }}
+                            onClick={() => hapusAuthor(author.id)}
+                          >
+                            Hapus
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -540,9 +635,7 @@ function App() {
         <h3>
           BookSales <span>🌷</span>
         </h3>
-
         <p>Temukan cerita favoritmu, satu buku dalam satu waktu.</p>
-
         <p className="copyright">
           © 2026 BookSales · Made with ♡ for book lovers
         </p>
