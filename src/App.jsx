@@ -26,12 +26,21 @@ function App() {
   const [inputGenre, setInputGenre] = useState("");
   const [inputAuthor, setInputAuthor] = useState("");
 
-  // State untuk mode Edit (Update)
   const [editGenreId, setEditGenreId] = useState(null);
   const [editGenreName, setEditGenreName] = useState("");
 
   const [editAuthorId, setEditAuthorId] = useState(null);
   const [editAuthorName, setEditAuthorName] = useState("");
+
+  // --- STATE REGISTRASI PENGGUNA (TUGAS 3) ---
+  const [formRegister, setFormRegister] = useState({
+    fullname: "",
+    email: "",
+    username: "",
+    password: ""
+  });
+  const [errorsRegister, setErrorsRegister] = useState({});
+  const [registerSukses, setRegisterSukses] = useState(false);
 
   const [formBuku, setFormBuku] = useState({
     title: "",
@@ -47,8 +56,55 @@ function App() {
       .includes(pencarian.toLowerCase().trim())
   );
 
-  // ==================== FITUR GENRE (CRUD) ====================
-  // 1. Create Genre
+  // ==================== FITUR REGISTRASI (TUGAS 3) ====================
+  function ubahFormRegister(e) {
+    const { name, value } = e.target;
+    setFormRegister((prev) => ({ ...prev, [name]: value }));
+    if (errorsRegister[name]) {
+      setErrorsRegister((prev) => ({ ...prev, [name]: "" }));
+    }
+  }
+
+  function validasiFormRegister() {
+    const err = {};
+    if (!formRegister.fullname.trim()) err.fullname = "Nama lengkap wajib diisi";
+    
+    if (!formRegister.email.trim()) {
+      err.email = "Email wajib diisi";
+    } else if (!/\S+@\S+\.\S+/.test(formRegister.email)) {
+      err.email = "Format email tidak valid (contoh: user@gmail.com)";
+    }
+
+    if (!formRegister.username.trim()) {
+      err.username = "Username wajib diisi";
+    } else if (formRegister.username.length < 4) {
+      err.username = "Username minimal 4 karakter";
+    }
+
+    if (!formRegister.password) {
+      err.password = "Password wajib diisi";
+    } else if (formRegister.password.length < 6) {
+      err.password = "Password minimal 6 karakter";
+    }
+
+    return err;
+  }
+
+  function submitRegister(e) {
+    e.preventDefault();
+    const validationErrors = validasiFormRegister();
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrorsRegister(validationErrors);
+      setRegisterSukses(false);
+    } else {
+      setErrorsRegister({});
+      setRegisterSukses(true);
+      setFormRegister({ fullname: "", email: "", username: "", password: "" });
+    }
+  }
+
+  // ==================== FITUR GENRE (CRUD - TUGAS 1 & 2) ====================
   function tambahGenre(e) {
     e.preventDefault();
     if (!inputGenre.trim()) return;
@@ -56,13 +112,11 @@ function App() {
     setInputGenre("");
   }
 
-  // 2. Start Edit Genre
   function mulaiEditGenre(genre) {
     setEditGenreId(genre.id);
     setEditGenreName(genre.name);
   }
 
-  // 3. Save Edit / Update Genre
   function simpanEditGenre(e) {
     e.preventDefault();
     if (!editGenreName.trim()) return;
@@ -73,15 +127,13 @@ function App() {
     setEditGenreName("");
   }
 
-  // 4. Delete Genre
   function hapusGenre(id) {
     if (window.confirm("Yakin ingin menghapus genre ini?")) {
       setGenres((prev) => prev.filter((g) => g.id !== id));
     }
   }
 
-  // ==================== FITUR AUTHOR (CRUD) ====================
-  // 1. Create Author
+  // ==================== FITUR AUTHOR (CRUD - TUGAS 1 & 2) ====================
   function tambahAuthor(e) {
     e.preventDefault();
     if (!inputAuthor.trim()) return;
@@ -89,13 +141,11 @@ function App() {
     setInputAuthor("");
   }
 
-  // 2. Start Edit Author
   function mulaiEditAuthor(author) {
     setEditAuthorId(author.id);
     setEditAuthorName(author.name);
   }
 
-  // 3. Save Edit / Update Author
   function simpanEditAuthor(e) {
     e.preventDefault();
     if (!editAuthorName.trim()) return;
@@ -106,7 +156,6 @@ function App() {
     setEditAuthorName("");
   }
 
-  // 4. Delete Author
   function hapusAuthor(id) {
     if (window.confirm("Yakin ingin menghapus author ini?")) {
       setAuthors((prev) => prev.filter((a) => a.id !== id));
@@ -231,6 +280,19 @@ function App() {
           }}
         >
           Admin
+        </button>
+
+        <button
+          type="button"
+          className={halaman === "register" && !bukuDipilih ? "active" : ""}
+          onClick={() => {
+            setHalaman("register");
+            setBukuDipilih(null);
+            setRegisterSukses(false);
+            setErrorsRegister({});
+          }}
+        >
+          Register
         </button>
       </nav>
 
@@ -449,7 +511,7 @@ function App() {
           </section>
         )}
 
-        {/* HALAMAN ADMIN (CRUD COMPLETE FOR GENRE & AUTHOR) */}
+        {/* HALAMAN ADMIN */}
         {!bukuDipilih && halaman === "admin" && (
           <section className="collection-section">
             <div className="section-heading">
@@ -464,7 +526,6 @@ function App() {
             <div className="book-form" style={{ marginBottom: "30px" }}>
               <h3>Genre Buku</h3>
 
-              {/* Form Tambah Genre */}
               <form onSubmit={tambahGenre} style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
                 <input
                   type="text"
@@ -478,7 +539,6 @@ function App() {
                 </button>
               </form>
 
-              {/* Read / List Genre dengan Edit & Delete */}
               <h4>Daftar Genre ({genres.length})</h4>
               <ul style={{ paddingLeft: "0", listStyle: "none", marginTop: "15px" }}>
                 {genres.map((genre) => (
@@ -548,7 +608,6 @@ function App() {
             <div className="book-form">
               <h3>Author / Penulis Buku</h3>
 
-              {/* Form Tambah Author */}
               <form onSubmit={tambahAuthor} style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
                 <input
                   type="text"
@@ -562,7 +621,6 @@ function App() {
                 </button>
               </form>
 
-              {/* Read / List Author dengan Edit & Delete */}
               <h4>Daftar Author ({authors.length})</h4>
               <ul style={{ paddingLeft: "0", listStyle: "none", marginTop: "15px" }}>
                 {authors.map((author) => (
@@ -626,6 +684,111 @@ function App() {
                   </li>
                 ))}
               </ul>
+            </div>
+          </section>
+        )}
+
+        {/* HALAMAN REGISTRASI PENGGUNA (TUGAS 3) */}
+        {!bukuDipilih && halaman === "register" && (
+          <section className="collection-section">
+            <div className="section-heading">
+              <div>
+                <span className="section-label">BERGABUNG DENGAN KAMI</span>
+                <h2>Registrasi Akun Baru</h2>
+                <p>Buat akun untuk menikmati seluruh fitur BookSales.</p>
+              </div>
+            </div>
+
+            <div className="book-form" style={{ maxWidth: "500px", margin: "0 auto" }}>
+              {registerSukses && (
+                <div
+                  style={{
+                    backgroundColor: "#e8f5e9",
+                    color: "#2e7d32",
+                    padding: "12px 16px",
+                    borderRadius: "6px",
+                    marginBottom: "20px",
+                    textAlign: "center",
+                    fontWeight: "bold"
+                  }}
+                >
+                  🎉 Registrasi berhasil! Selamat bergabung di BookSales.
+                </div>
+              )}
+
+              <form onSubmit={submitRegister}>
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="fullname">Nama Lengkap *</label>
+                  <input
+                    id="fullname"
+                    name="fullname"
+                    type="text"
+                    value={formRegister.fullname}
+                    onChange={ubahFormRegister}
+                    placeholder="Masukkan nama lengkap Anda"
+                  />
+                  {errorsRegister.fullname && (
+                    <span style={{ color: "#d32f2f", fontSize: "0.85rem", marginTop: "4px", display: "block" }}>
+                      {errorsRegister.fullname}
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="email">Email *</label>
+                  <input
+                    id="email"
+                    name="email"
+                    type="text"
+                    value={formRegister.email}
+                    onChange={ubahFormRegister}
+                    placeholder="contoh: user@gmail.com"
+                  />
+                  {errorsRegister.email && (
+                    <span style={{ color: "#d32f2f", fontSize: "0.85rem", marginTop: "4px", display: "block" }}>
+                      {errorsRegister.email}
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ marginBottom: "15px" }}>
+                  <label htmlFor="username">Username *</label>
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    value={formRegister.username}
+                    onChange={ubahFormRegister}
+                    placeholder="Masukkan username Anda"
+                  />
+                  {errorsRegister.username && (
+                    <span style={{ color: "#d32f2f", fontSize: "0.85rem", marginTop: "4px", display: "block" }}>
+                      {errorsRegister.username}
+                    </span>
+                  )}
+                </div>
+
+                <div style={{ marginBottom: "20px" }}>
+                  <label htmlFor="password">Password *</label>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    value={formRegister.password}
+                    onChange={ubahFormRegister}
+                    placeholder="Masukkan password (min. 6 karakter)"
+                  />
+                  {errorsRegister.password && (
+                    <span style={{ color: "#d32f2f", fontSize: "0.85rem", marginTop: "4px", display: "block" }}>
+                      {errorsRegister.password}
+                    </span>
+                  )}
+                </div>
+
+                <button type="submit" className="primary-button" style={{ width: "100%" }}>
+                  Daftar Sekarang
+                </button>
+              </form>
             </div>
           </section>
         )}
